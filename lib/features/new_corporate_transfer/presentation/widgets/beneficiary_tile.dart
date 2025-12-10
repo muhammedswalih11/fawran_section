@@ -1,0 +1,304 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+
+import '../../../../core/utils/colors.dart';
+import '../data/models.dart';
+import 'action_bottom_sheet.dart';
+
+class BeneficiaryTile extends StatelessWidget {
+  final Beneficiary beneficiary;
+  final VoidCallback? onToggleFavourite;
+  final bool showActionButton;
+  final VoidCallback? onTap;
+
+  const BeneficiaryTile({
+    super.key,
+    required this.beneficiary,
+    this.onToggleFavourite,
+    this.showActionButton = true,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    /// Build avatar widget
+    final Widget avatar;
+    if (beneficiary.avatarUrl != null && beneficiary.avatarUrl!.isNotEmpty) {
+      avatar = CircleAvatar(
+        radius: screenWidth * 0.064,
+        backgroundImage: NetworkImage(beneficiary.avatarUrl!),
+      );
+    } else if (beneficiary.localImage != null &&
+        beneficiary.localImage!.isNotEmpty) {
+      if (beneficiary.localImage!.toLowerCase().endsWith('.svg')) {
+        avatar = CircleAvatar(
+          radius: screenWidth * 0.064,
+          backgroundColor: Colors.transparent,
+          child: ClipOval(
+            child: SvgPicture.asset(
+              beneficiary.localImage!,
+              width: screenWidth * 0.128,
+              height: screenWidth * 0.128,
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      } else {
+        avatar = CircleAvatar(
+          radius: screenWidth * 0.064,
+          backgroundImage: AssetImage(beneficiary.localImage!),
+          onBackgroundImageError: (exception, stackTrace) {
+            debugPrint('Error loading image: $exception');
+          },
+        );
+      }
+    } else {
+      // Show initials when no image provided
+      final initials = beneficiary.name.trim().isNotEmpty
+          ? beneficiary.name
+                .trim()
+                .split(' ')
+                .map((e) => e.isNotEmpty ? e[0] : '')
+                .take(2)
+                .join()
+          : '';
+
+      avatar = CircleAvatar(
+        backgroundColor: DefaultColors.white,
+        radius: screenWidth * 0.064,
+        child: CircleAvatar(
+          radius: screenWidth * 0.06,
+          backgroundColor: DefaultColors.blue03,
+          child: Text(
+            initials,
+            style: TextStyle(
+              color: DefaultColors.black,
+              fontWeight: FontWeight.w600,
+              fontSize: screenWidth * 0.04,
+            ),
+          ),
+        ),
+      );
+    }
+
+    /// Return ListTile for ALL cases
+    final textColor = beneficiary.isDisabled
+        ? DefaultColors.grayBase
+        : DefaultColors.black;
+
+    return Slidable(
+      enabled: showActionButton && !beneficiary.isDisabled,
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        extentRatio: 0.4,
+        children: [
+          CustomSlidableAction(
+            onPressed: (_) {},
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+            child: Container(
+              width: 1,
+              height: double.infinity,
+              color: DefaultColors.grayE6,
+            ),
+            autoClose: false,
+          ),
+          CustomSlidableAction(
+            onPressed: (context) {
+              if (onToggleFavourite != null) onToggleFavourite!();
+            },
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+            child: Container(
+              width: screenWidth * 0.10,
+              height: screenWidth * 0.10,
+              decoration: BoxDecoration(
+                color: DefaultColors.blue04,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                beneficiary.isFavourite == true
+                    ? Icons.star
+                    : Icons.star_border,
+                color: DefaultColors.black,
+                size: screenWidth * 0.05,
+              ),
+            ),
+          ),
+          CustomSlidableAction(
+            onPressed: (context) {
+              // Delete action
+            },
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+            child: Container(
+              width: screenWidth * 0.10,
+              height: screenWidth * 0.10,
+              decoration: BoxDecoration(
+                color: DefaultColors.redC2,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.delete_outline,
+                color: Colors.red,
+                size: screenWidth * 0.05,
+              ),
+            ),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: ListTile(
+          onTap: beneficiary.isDisabled ? null : onTap,
+          leading: Opacity(
+            opacity: beneficiary.isDisabled ? 0.5 : 1.0,
+            child: Stack(
+              alignment: AlignmentGeometry.bottomCenter,
+              clipBehavior: Clip.none,
+              children: [
+                avatar,
+                if (beneficiary.isCorporate)
+                  Positioned(
+                    top: -6,
+
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.015,
+                        vertical: screenWidth * 0.008,
+                      ),
+                      decoration: BoxDecoration(
+                        color: DefaultColors.blue,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: DefaultColors.white,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        'CORP',
+                        style: TextStyle(
+                          color: DefaultColors.white,
+                          fontSize: screenWidth * 0.022,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (beneficiary.isFavourite == true)
+                  Positioned(
+                    bottom: -10,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Background star (border)
+                        Icon(
+                          Icons.star,
+                          size: screenWidth * 0.076,
+                          color: DefaultColors.white,
+                        ),
+                        // Foreground star
+                        Icon(
+                          Icons.star,
+                          size: screenWidth * 0.06,
+                          color: DefaultColors.yellow_0,
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          title: Text(
+            beneficiary.name,
+            style: TextStyle(
+              fontSize: screenWidth * 0.035,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                beneficiary.id,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.030,
+                  fontWeight: FontWeight.w500,
+                  color: DefaultColors.grayBase,
+                ),
+              ),
+              Text(
+                beneficiary.bank,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.026,
+                  fontWeight: FontWeight.w500,
+                  color: DefaultColors.grayBase,
+                ),
+              ),
+            ],
+          ),
+          contentPadding: EdgeInsets.only(
+            left: screenWidth * 0.036,
+            right: showActionButton ? 0 : screenWidth * 0.036,
+          ),
+          trailing: beneficiary.statusText != null
+              ? Padding(
+                  padding: EdgeInsets.only(
+                    right: screenWidth * 0.036,
+                    top: screenHeight * 0.012,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Active in',
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.028,
+                          fontWeight: FontWeight.w500,
+                          color: DefaultColors.grayBase,
+                        ),
+                      ),
+                      Text(
+                        beneficiary.statusText!,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.028,
+                          fontWeight: FontWeight.w500,
+                          color: DefaultColors.grayBase,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : (showActionButton
+                    ? IconButton(
+                        color: DefaultColors.grayTB.withAlpha(170),
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(24),
+                              ),
+                            ),
+                            builder: (_) => ActionBottomSheet(
+                              isFavourite: beneficiary.isFavourite ?? false,
+                              onToggleFavourite: onToggleFavourite ?? () {},
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.more_vert),
+                      )
+                    : null),
+        ),
+      ),
+    );
+  }
+}
