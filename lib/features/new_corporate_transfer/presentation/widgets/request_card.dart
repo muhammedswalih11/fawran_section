@@ -38,11 +38,14 @@ class RequestCard extends StatelessWidget {
                       color: Color(0xFFE7F4FF),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      item.isReceived
-                          ? Icons.arrow_downward
-                          : Icons.arrow_upward,
-                      color: Color(0xFF0080FF),
+                    child: Transform.rotate(
+                      angle: item.isReceived ? 1 : 1,
+                      child: Icon(
+                        item.isReceived
+                            ? Icons.arrow_downward
+                            : Icons.arrow_upward,
+                        color: Color(0xFF0080FF),
+                      ),
                     ),
                   ),
 

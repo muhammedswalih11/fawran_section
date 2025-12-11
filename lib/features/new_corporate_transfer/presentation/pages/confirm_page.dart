@@ -61,7 +61,7 @@ class _ConfirmPageState extends State<ConfirmPage> {
                     top: screenHeight * 0.03,
                     left: screenWidth * 0.04,
                     right: screenWidth * 0.04,
-                    bottom: screenHeight * 0.02,
+                    bottom: screenHeight * 0.01,
                   ),
                   decoration: BoxDecoration(
                     color: DefaultColors.white,
@@ -137,6 +137,24 @@ class _ConfirmPageState extends State<ConfirmPage> {
                                         color: DefaultColors.black,
                                       ),
                                     ),
+                                    SizedBox(height: screenHeight * 0.008),
+                                    Text(
+                                      'Total Amount',
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.035,
+                                        fontWeight: FontWeight.w400,
+                                        color: DefaultColors.grayMedBase,
+                                      ),
+                                    ),
+                                    SizedBox(height: screenHeight * 0.005),
+                                    Text(
+                                      '${widget.transferDataOfWithinFawran["totaldebitAmount"]} QAR',
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.040,
+                                        fontWeight: FontWeight.w700,
+                                        color: DefaultColors.black,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -149,16 +167,24 @@ class _ConfirmPageState extends State<ConfirmPage> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (context) {
-                                return FawranSuccess(
-                                  data: widget.transferDataOfWithinFawran,
-                                );
-                              },
-                            );
+                            print("Confirm button pressed"); // Debug
+                            try {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) {
+                                  print(
+                                    "Building FawranSuccess modal",
+                                  ); // Debug
+                                  return FawranSuccess(
+                                    data: widget.transferDataOfWithinFawran,
+                                  );
+                                },
+                              );
+                            } catch (e) {
+                              print("Error showing modal: $e"); // Debug
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: DefaultColors.dashboarddarkBlue,
@@ -180,7 +206,6 @@ class _ConfirmPageState extends State<ConfirmPage> {
                           ),
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.01),
                     ],
                   ),
                 ),

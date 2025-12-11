@@ -178,3 +178,7 @@ final selectedBeneficiaryAliasTypeProvider = StateProvider<String?>(
 );
 
 final selectedBeneficiaryAliasProvider = StateProvider<String?>((ref) => null);
+
+final selectedFromAccountProvider = StateProvider<Map<String, String>?>(
+  (ref) => null,
+);

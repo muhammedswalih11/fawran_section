@@ -138,9 +138,9 @@ final List<RecentTransaction> recentTransactions = [
 //favourite  list
 
 final List<FavouriteItem> favouriteList = [
-  FavouriteItem(name: "Peter P", avatar: "assets/images/sarah.png"),
+  FavouriteItem(name: "Peter P", avatar: "assets/images/Avatars.png"),
   FavouriteItem(name: "ABC Lt..", isCorporate: true),
-  FavouriteItem(name: "Sarah", avatar: "assets/images/sarah.png"),
+  FavouriteItem(name: "Sarah", avatar: "assets/images/sara.png"),
   FavouriteItem(name: "Sahil"),
 ];
 
